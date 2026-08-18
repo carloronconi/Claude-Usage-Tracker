@@ -1386,6 +1386,21 @@ struct StatusBannerView: View {
     var onTap: (() -> Void)? = nil
 
     var body: some View {
+        // A Button rather than a tap gesture: the popover belongs to an inactive
+        // accessory app, and AppKit only delivers a click-through mouse-down to views
+        // that accept first mouse — controls do, a bare tap gesture doesn't.
+        if let onTap {
+            Button(action: onTap) {
+                bannerContent
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        } else {
+            bannerContent
+        }
+    }
+
+    private var bannerContent: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.system(size: 11))
@@ -1407,6 +1422,5 @@ struct StatusBannerView: View {
         .cornerRadius(6)
         .padding(.horizontal, 10)
         .padding(.top, 4)
-        .onTapGesture { onTap?() }
     }
 }
